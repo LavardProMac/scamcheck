@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScamChecker — Phát Hiện Lừa Đảo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="layout">
+  <!-- ── Sidebar ──────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-title">ScamChecker</div>
+        <div class="logo-sub">Phát Hiện Lừa Đảo</div>
+      </div>
+    </div>
+    <nav>
+      <button class="nav-btn active" id="nav-analyze" onclick="showPage('analyze')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Phân Tích
+      </button>
+      <button class="nav-btn" id="nav-history" onclick="showPage('history')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <path stroke-linecap="round" d="M12 6v6l4 2"/>
+        </svg>
+        Lịch Sử
+      </button>
+      <button class="nav-btn" id="nav-stats" onclick="showPage('stats')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Thống Kê
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────── -->
+  <div class="main-area">
+    <header class="topbar">
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg id="theme-icon-sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5"/>
+          <path stroke-linecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg id="theme-icon-moon" style="display:none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+        <span id="theme-label">Sáng</span>
+      </button>
+    </header>
+
+    <main class="page-content">
+
+      <!-- ── PAGE: Phân Tích ───────────────────────────────── -->
+      <div class="page active" id="page-analyze">
+        <div class="page-inner">
+
+          <div class="hero">
+            <div class="hero-badge">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Công cụ phân tích lừa đảo
+            </div>
+            <h1 class="hero-title">Scam<span>Checker</span></h1>
+            <p class="hero-sub">Dán tin nhắn đáng ngờ — AI sẽ phân tích và cho bạn biết đây có phải lừa đảo không.</p>
+          </div>
+
+          <!-- API Key -->
+          <div class="apikey-box" id="apikey-box">
+            <h3>OpenAI API Key</h3>
+            <p>
+              Lấy tại <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--pri);text-decoration:underline">platform.openai.com/api-keys</a>.
+              Key được lưu trong trình duyệt, không gửi đi đâu khác.
+              Hoặc khai báo trong <code style="font-family:'Space Mono',monospace;background:var(--muted);padding:1px 4px;border-radius:3px">config.js</code>.
+            </p>
+            <div class="apikey-row">
+              <input type="password" id="api-key-input" placeholder="sk-..." />
+              <button class="btn-save" onclick="saveApiKey()">Lưu</button>
+            </div>
+            <div class="apikey-saved" id="apikey-saved">✓ Đã lưu API key</div>
+          </div>
+
+          <!-- Input card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Nội dung tin nhắn
+              </div>
+              <div class="card-desc">Dán nội dung tin nhắn đáng ngờ vào đây để phân tích.</div>
+            </div>
+            <div class="card-body">
+              <textarea
+                id="message-input"
+                placeholder="Ví dụ: Chúc mừng bạn đã trúng thưởng 100 triệu VNĐ, vui lòng cung cấp CMND và số tài khoản để nhận thưởng..."
+              ></textarea>
+
+              <button class="psych-toggle" id="psych-toggle" onclick="togglePsych()">
+                <div class="toggle-track" id="toggle-track">
+                  <div class="toggle-thumb"></div>
+                </div>
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                </svg>
+                <div>
+                  <div class="toggle-label">Thêm phân tích tâm lý</div>
+                  <div class="toggle-sub">Phân tích chiến thuật thao túng cảm xúc trong tin nhắn</div>
+                </div>
+              </button>
+
+              <button class="btn-primary" id="analyze-btn" onclick="analyze()">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Kiểm Tra Ngay
+              </button>
+            </div>
+          </div>
+
+          <div id="results"></div>
+
+          <div class="empty-state" id="empty-state">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <p>Chưa có dữ liệu — Dán tin nhắn và bấm Kiểm Tra Ngay</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PAGE: Lịch Sử ─────────────────────────────────── -->
+      <div class="page" id="page-history">
+        <div class="page-inner">
+          <h2 style="font-size:30px;font-weight:800;margin-bottom:4px">Lịch Sử Quét</h2>
+          <p style="color:var(--mfg);font-size:14px;margin-bottom:28px">Danh sách các tin nhắn đã được phân tích bởi hệ thống.</p>
+          <div id="history-list"></div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Thống Kê ────────────────────────────────── -->
+      <div class="page" id="page-stats">
+        <div class="page-inner">
+          <h2 style="font-size:30px;font-weight:800;margin-bottom:4px">Thống Kê Hệ Thống</h2>
+          <p style="color:var(--mfg);font-size:14px;margin-bottom:28px">Tổng quan về tình hình bảo mật và các mối đe dọa.</p>
+
+          <div class="stats-grid">
+            <div class="stats-card">
+              <div class="stats-header">
+                <div class="stats-header-label">Tổng số lần quét</div>
+                <svg width="16" height="16" fill="none" stroke="var(--pri)" stroke-width="2" viewBox="0 0 24 24">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path stroke-linecap="round" d="M3 5v14a9 3 0 0018 0V5M3 12a9 3 0 0018 0"/>
+                </svg>
+              </div>
+              <div class="stats-num" id="stat-total">0</div>
+            </div>
+            <div class="stats-card">
+              <div class="stats-header">
+                <div class="stats-header-label">An toàn</div>
+                <svg width="16" height="16" fill="none" stroke="#4ade80" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div class="stats-num" id="stat-safe" style="color:#4ade80">0</div>
+            </div>
+            <div class="stats-card">
+              <div class="stats-header">
+                <div class="stats-header-label">Đáng ngờ</div>
+                <svg width="16" height="16" fill="none" stroke="var(--pri)" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/>
+                </svg>
+              </div>
+              <div class="stats-num" id="stat-suspicious" style="color:var(--pri)">0</div>
+            </div>
+            <div class="stats-card danger">
+              <div class="stats-header">
+                <div class="stats-header-label" style="color:#f87171">Nguy hiểm</div>
+                <svg width="16" height="16" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+              <div class="stats-num" id="stat-dangerous" style="color:#f87171">0</div>
+            </div>
+          </div>
+
+          <div class="card-plain">
+            <div class="card-header">
+              <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;text-transform:uppercase;color:var(--pri)">
+                Điểm Rủi Ro Trung Bình
+              </div>
+            </div>
+            <div class="avg-circle-wrap">
+              <div class="avg-circle">
+                <div class="avg-ring"></div>
+                <div class="avg-inner">
+                  <div class="avg-num" id="stat-avg">0</div>
+                  <div class="avg-denom">/ 100</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Config (khoá API — không đưa lên Git) -->
+<script src="config.js" onerror="console.info('config.js not found, using UI input or localStorage')"></script>
+<script src="app.js"></script>
+</body>
+</html>
